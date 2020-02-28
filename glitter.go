@@ -12,6 +12,7 @@ import (
 type HandlerFunc func(*Context)
 
 type RouterGroup struct {
+	// node        *node
 	prefix      string
 	middleWares []HandlerFunc
 	parent      *RouterGroup
@@ -32,7 +33,7 @@ func Logger() HandlerFunc {
 	return func(ctx *Context) {
 		t := time.Now()
 		ctx.Next()
-		log.Printf("[%d] %s in %v", ctx.StatusCode, ctx.Request.RequestURI, time.Since(t))
+		log.Printf("[%d] %s %s in %v", ctx.StatusCode, ctx.Method, ctx.Request.RequestURI, time.Since(t))
 	}
 }
 
@@ -125,9 +126,11 @@ func (group *RouterGroup) OPTIONS(pattern string, handler HandlerFunc) {
 func (group *RouterGroup) DELETE(pattern string, handler HandlerFunc) {
 	group.addRouter("DELETE", pattern, handler)
 }
+
 func (group *RouterGroup) CONNECT(pattern string, handler HandlerFunc) {
 	group.addRouter("CONNECT", pattern, handler)
 }
+
 func (group *RouterGroup) TRACE(pattern string, handler HandlerFunc) {
 	group.addRouter("TRACE", pattern, handler)
 }
@@ -145,7 +148,10 @@ func (group *RouterGroup) Any(pattern string, handler HandlerFunc) {
 }
 
 func (group *RouterGroup) Use(middleWares ...HandlerFunc) {
-	group.middleWares = append(group.middleWares, middleWares...)
+	// group.middleWares = append(group.middleWares, middleWares...)
+	pattern := group.prefix
+	log.Printf("Use middleWars on %s", pattern)
+	group.engine.router.useMiddleWars(pattern, middleWares...)
 }
 
 func (engine *Engine) Run(addr string) (err error) {
