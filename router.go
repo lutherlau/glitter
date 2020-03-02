@@ -6,9 +6,7 @@ import (
 )
 
 type router struct {
-	// roots map[string]*node
 	root *node
-	// handlers map[string]HandlerFunc
 }
 
 func newRouter() *router {
@@ -18,8 +16,6 @@ func newRouter() *router {
 			handler:   make(map[string]HandlerFunc),
 			hasMethod: make(map[string]bool),
 		},
-		// roots:    make(map[string]*node),
-		// handlers: make(map[string]HandlerFunc),
 	}
 }
 

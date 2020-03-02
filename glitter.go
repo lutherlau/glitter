@@ -12,17 +12,14 @@ import (
 type HandlerFunc func(*Context)
 
 type RouterGroup struct {
-	// node        *node
-	prefix      string
-	middleWares []HandlerFunc
-	parent      *RouterGroup
-	engine      *Engine
+	prefix string
+	parent *RouterGroup
+	engine *Engine
 }
 
 type Engine struct {
 	*RouterGroup
 	router        *router
-	groups        []*RouterGroup
 	htmlTemplates *template.Template
 	funcMap       template.FuncMap
 	pool          sync.Pool
@@ -46,7 +43,6 @@ func (engine *Engine) newContext() *Context {
 func New() *Engine {
 	engine := &Engine{router: newRouter()}
 	engine.RouterGroup = &RouterGroup{engine: engine}
-	engine.groups = []*RouterGroup{engine.RouterGroup}
 	engine.pool.New = func() interface{} {
 		return engine.newContext()
 	}
@@ -94,7 +90,6 @@ func (group *RouterGroup) Group(prefix string) *RouterGroup {
 		parent: group,
 		engine: engine,
 	}
-	engine.groups = append(engine.groups, newGroup)
 	return newGroup
 }
 
@@ -148,9 +143,13 @@ func (group *RouterGroup) Any(pattern string, handler HandlerFunc) {
 }
 
 func (group *RouterGroup) Use(middleWares ...HandlerFunc) {
-	// group.middleWares = append(group.middleWares, middleWares...)
-	pattern := group.prefix
-	log.Printf("Use middleWars on %s", pattern)
+	var pattern string
+	if group.prefix == "" {
+		pattern = "engine"
+	} else {
+		pattern = group.prefix
+	}
+	log.Printf("Use %d middleWars on %s", len(middleWares), pattern)
 	group.engine.router.useMiddleWars(pattern, middleWares...)
 }
 
