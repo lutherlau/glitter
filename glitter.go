@@ -153,7 +153,7 @@ func (group *RouterGroup) Use(middleWares ...HandlerFunc) {
 	group.engine.router.useMiddleWars(pattern, middleWares...)
 }
 
-func (engine *Engine) Run(addr string) (err error) {
+func (engine *Engine) Run(addr string) {
 	log.Fatal(http.ListenAndServe(addr, engine))
 }
 
