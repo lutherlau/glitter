@@ -154,7 +154,7 @@ func (group *RouterGroup) Use(middleWares ...HandlerFunc) {
 }
 
 func (engine *Engine) Run(addr string) (err error) {
-	return http.ListenAndServe(addr, engine)
+	log.Fatal(http.ListenAndServe(addr, engine))
 }
 
 func (engine *Engine) ServeHTTP(w http.ResponseWriter, r *http.Request) {
